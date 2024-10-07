@@ -142,6 +142,9 @@ export default {
     padding: 20px 0;
     font-size: 20px;
     font-family: 'Times New Roman', Times, serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .scan-confirmation {
@@ -161,9 +164,6 @@ export default {
     color: white;
     font-weight: 400;
     font-family: 'Times New Roman', Times, serif;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .btn-cam {
