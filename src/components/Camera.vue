@@ -84,7 +84,6 @@ export default {
         async onDetect(detectedCodes) {
             if (detectedCodes.length > 0) {
                 this.result = detectedCodes[0].rawValue;
-                console.log(this.result);
 
                 this.showScanConfirmation = true;
 
