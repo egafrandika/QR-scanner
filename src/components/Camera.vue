@@ -19,7 +19,8 @@
                 </div>
                 <div v-if="!loading" :style="{ backgroundColor: result === '' ? '#EBEBE4' : '' }" class="btn-cam"
                     @click="onData">
-                    <span v-if="result === ''" class="text-cam" :style="{ color: result === '' ? '#4BC5BD' : '' }">
+                    <span v-if="result === ''" class="text-cam" :style="{ color: result === '' ? '#4BC5BD' : '' }"
+                        @click="isEmpty">
                         Kode Kosong
                     </span>
                     <span v-else class="text-cam">
@@ -34,6 +35,7 @@
 
 import { QrcodeStream } from 'vue-qrcode-reader';
 import { getDatabase, ref, get, update } from 'firebase/database';
+import { Notifications } from '@kyvg/vue3-notification';
 
 export default {
     name: 'CamDetector',
@@ -116,6 +118,13 @@ export default {
                 await this.timeOut(500);
                 this.paused = false;
             }
+        },
+
+        isEmpty() {
+            this.$notify({
+                title: 'Kode tidak boleh kosong',
+                type: 'warn'
+            })
         },
 
         onCameraOn() {
