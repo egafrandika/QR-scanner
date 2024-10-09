@@ -35,7 +35,6 @@
 
 import { QrcodeStream } from 'vue-qrcode-reader';
 import { getDatabase, ref, get, update } from 'firebase/database';
-import { Notifications } from '@kyvg/vue3-notification';
 
 export default {
     name: 'CamDetector',
@@ -74,35 +73,38 @@ export default {
 
                     if (existingEntry) {
                         const [codeKey, entryData] = existingEntry;
-                        console.log(codeKey, entryData);
 
                         // Check if the code has been used before
                         if (entryData.used) {
                             this.$notify({
-                                title: 'QR Code telah di gunakan',
-                                type: 'error'
+                                title: 'QR Kode telah di gunakan',
+                                type: 'error',
+                                duration: 10000
                             });
                         } else {
                             // Mark the code as used for the first time
                             await update(ref(db, `${codeKey}`), { used: true });
 
                             this.$notify({
-                                title: 'QR code berhasil',
-                                type: 'success'
+                                title: 'QR Kode berhasil',
+                                type: 'success',
+                                duration: 10000
                             });
                         }
                     } else {
                         // If the QR code doesn't exist
                         this.$notify({
-                            title: 'Code Tidak Sesuai',
-                            type: 'error'
+                            title: 'Kode Tidak Sesuai',
+                            type: 'error',
+                            duration: 10000
                         });
                     }
                 } catch (error) {
                     console.error('Error accessing the database:', error);
                     this.$notify({
                         title: 'Database error',
-                        type: 'error'
+                        type: 'error',
+                        duration: 10000
                     });
                 }
             }
@@ -123,7 +125,8 @@ export default {
         isEmpty() {
             this.$notify({
                 title: 'Kode tidak boleh kosong',
-                type: 'warn'
+                type: 'warn',
+                duration: 10000
             })
         },
 
