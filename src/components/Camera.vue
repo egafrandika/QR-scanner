@@ -11,14 +11,20 @@
                 </div>
             </qrcode-stream>
             <p class="decode-result wrap-cam" v-if="!loading">
-                CODE QR: <b class="result">{{ result }}</b>
+                KODE QR: <b class="result">{{ result }}</b>
             </p>
             <div class="btn-wrapper">
                 <div v-if="!loading" class="btn-cam" @click="reload">
-                    <span class="text-cam">Try Again</span>
+                    <span class="text-cam">Coba Kembali</span>
                 </div>
-                <div v-if="!loading" class="btn-cam" @click="onData">
-                    <span class="text-cam">Submit Code</span>
+                <div v-if="!loading" :style="{ backgroundColor: result === '' ? '#EBEBE4' : '' }" class="btn-cam"
+                    @click="onData">
+                    <span v-if="result === ''" class="text-cam" :style="{ color: result === '' ? '#4BC5BD' : '' }">
+                        Kode Kosong
+                    </span>
+                    <span v-else class="text-cam">
+                        Kirim Code
+                    </span>
                 </div>
             </div>
         </div>
@@ -27,7 +33,7 @@
 <script>
 
 import { QrcodeStream } from 'vue-qrcode-reader';
-import { getDatabase, ref, push, get, update } from 'firebase/database';
+import { getDatabase, ref, get, update } from 'firebase/database';
 
 export default {
     name: 'CamDetector',
@@ -71,7 +77,7 @@ export default {
                         // Check if the code has been used before
                         if (entryData.used) {
                             this.$notify({
-                                title: 'The code has been used before',
+                                title: 'QR Code telah di gunakan',
                                 type: 'error'
                             });
                         } else {
@@ -79,7 +85,7 @@ export default {
                             await update(ref(db, `${codeKey}`), { used: true });
 
                             this.$notify({
-                                title: 'QR code success',
+                                title: 'QR code berhasil',
                                 type: 'success'
                             });
                         }
@@ -139,6 +145,10 @@ export default {
 </script>
 
 <style scoped>
+.disabled {
+    background: black;
+}
+
 .btn-wrapper {
     display: flex;
     flex-direction: row;
