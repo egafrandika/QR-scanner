@@ -27,7 +27,7 @@
 <script>
 
 import { QrcodeStream } from 'vue-qrcode-reader';
-import { getDatabase, ref, push, get } from 'firebase/database';
+import { getDatabase, ref, push, get, update } from 'firebase/database';
 
 export default {
     name: 'CamDetector',
@@ -56,26 +56,45 @@ export default {
             const sendQrCode = ref(db);
 
             if (this.result) {
-                const dataQr = { codeQr: this.result };
+                try {
+                    // Check if the QR code already exists
+                    const snapshot = await get(sendQrCode);
+                    const existingData = snapshot.val();
 
-                // Check if the QR code already exists
-                const snapshot = await get(sendQrCode);
-                const existingData = snapshot.val();
+                    // Find if the code already exists and how many times it has been used
+                    const existingEntry = Object.entries(existingData || {}).find(([, item]) => item.codeQr === this.result);
 
-                // Check if the code already exists in the object
-                const codeExists = Object.values(existingData || {}).some((item) => item.codeQr === this.result);
+                    if (existingEntry) {
+                        const [codeKey, entryData] = existingEntry;
+                        console.log(codeKey, entryData);
 
-                if (codeExists) {
+                        // Check if the code has been used before
+                        if (entryData.used) {
+                            this.$notify({
+                                title: 'The code has been used before',
+                                type: 'error'
+                            });
+                        } else {
+                            // Mark the code as used for the first time
+                            await update(ref(db, `${codeKey}`), { used: true });
+
+                            this.$notify({
+                                title: 'QR code success',
+                                type: 'success'
+                            });
+                        }
+                    } else {
+                        // If the QR code doesn't exist
+                        this.$notify({
+                            title: 'Code Tidak Sesuai',
+                            type: 'error'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error accessing the database:', error);
                     this.$notify({
-                        title: 'QR already exists',
+                        title: 'Database error',
                         type: 'error'
-                    });
-                } else {
-                    // Set the new data as an object
-                    await push(sendQrCode, dataQr);
-                    this.$notify({
-                        title: 'Success sending the QR',
-                        type: 'success'
                     });
                 }
             }
